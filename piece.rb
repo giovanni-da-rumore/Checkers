@@ -24,6 +24,9 @@ class Piece
     @board = board
     @king = false
     @moves = []
+
+    self.board[pos] = self
+
   end
 
   def symbol
@@ -46,6 +49,8 @@ class Piece
   end
 
   def normal_moves
+    p board
+    p pos
     self.moves = []
     move_dirs.each_with_index do |(dx, dy), idx|
       new_space = pos[0] + dx, pos[1] + dy
@@ -67,7 +72,6 @@ class Piece
       end
     end
     attack_moves
-
   end
 
 
@@ -89,7 +93,7 @@ class Piece
   end
 
   def in_board?(pos)
-    pos[0].between?(0,9) && pos[1].between?(0,9)
+    pos[0].between?(0,7) && pos[1].between?(0,7)
   end
 
 
