@@ -9,12 +9,10 @@ class Board
 
   attr_accessor :grid
 
-
   def initialize(grid = nil)
     grid = make_grid if grid.nil?
     @grid = grid
   end
-
 
   def make_grid
     Array.new(8) {Array.new(8)}
@@ -29,10 +27,11 @@ class Board
   def populate
     self.grid.each_with_index do |row, idx|
       row.each_with_index do |space, col|
-        if idx % 2 == 0 && col % 2 == 0 && idx < 3
+        if idx % 2 == 0 && col % 2 == 1 && idx < 3
           Piece.new([idx, col], :black, self)
-        elsif idx % 2 == 1 && col % 2 == 1 && idx < 3
+        elsif idx % 2 == 1 && col % 2 == 0 && idx < 3
           Piece.new([idx, col], :black, self)
+
         elsif idx % 2 == 1 && col % 2 == 0 && idx > 4
           Piece.new([idx, col], :red, self)
         elsif idx % 2 == 0 && col % 2 == 1 && idx > 4
@@ -43,17 +42,14 @@ class Board
   end
 
 
+  def in_board?(pos)
+    pos[0].between?(0,7) && pos[1].between?(0,7)
+  end
+
 
   def all_pieces
     grid.flatten.compact
   end
-
-  def []=(pos, piece)
-    x, y = pos[0], pos[1]
-    self.grid[x][y] = piece
-  end
-
-
 
   def [](pos)
     x, y = pos[0], pos[1]
@@ -72,26 +68,26 @@ class Board
   end
 
 
-  def perform_slide(start_pos, end_pos)
-    piece = self[start_pos]
-    raise "Start Position empty" if piece.nil?
-
-    piece.moves
-  end
-
-
   def render
+    handle = 0
     puts "   #{[1,2,3,4,5,6,7,8].join('  ')}"
-
     grid.each_with_index do |row, idx|
-      row.each_with_index do |piece, col|
+      display_row = row.dup
+      display_row.each_with_index do |piece, col|
         if piece
-          row[col] = piece.symbol
+          display_row[col] = piece.symbol.colorize(:red) if piece.color == :red
+          display_row[col] = piece.symbol if piece.color == :black
         else
-          row[col] = '--'
+          if col % 2 == handle
+            display_row[col] = '--'.colorize(:light_red)
+          else
+            display_row[col] = '--'.colorize(:light_black)
+          end
         end
       end
-      puts "#{idx + 1 }: #{row.join(' ')}"
+      handle = (handle == 0 ? 1 : 0)
+
+      puts "#{idx + 1 }: #{display_row.join(' ')}"
     end
   end
 end
@@ -105,27 +101,36 @@ board = Board.set_board
 
 
 
+#
+piece = Piece.new([2,1], :black, board)
+piece2 = Piece.new([4,5], :black, board)
+piece3 = Piece.new([5,4], :red, board)
+piece4 = Piece.new([2,1], :black, board)
 
-#piece = Piece.new([0,0], :black, board)
-#piece2 = Piece.new([4,4], :red, board)
+#
+# p piece4.possible_moves
+#
+#
+# p piece2.possible_moves
 
-#puts piece.symbol
-#p piece.possible_moves
-#puts piece2.symbol
-#p piece2.possible_moves
-
-
-puts board[[4,4]]
-puts
-#p board
 board.render
+#
+piece3.perform_jump([3,6])
+
+piece.perform_slide([3,2])
+#
+ puts
+# board.render
+board.render
+
+
 
 #
 # p String.modes
 #
 # p
 #
-# p String.color_samples
+#p String.color_samples
 #
 # count = 0
 #   handle = 2

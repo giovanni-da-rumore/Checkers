@@ -5,14 +5,12 @@ class Piece
 
   MOVES = {
     red:    [[-1, 1], [-1, -1]],
-    black:  [[1, 1], [-1, -1]],
-    king:   [[1, 1], [1, -1], [-1, 1], [-1, -1]]
+    black:  [[1, 1], [1, -1]],
   }
 
   ATTACK_MOVES = {
     red: [[-2, 2], [-2, -2]],
-    black: [[2, 2], [-2, -2]],
-    king: [[2, 2], [2, -2], [-2, 2], [-2, -2]]
+    black: [[2, 2], [2, -2]],
   }
 
   attr_accessor :color, :king, :pos, :board, :moves
@@ -23,8 +21,6 @@ class Piece
     @color = color
     @board = board
     @king = false
-    @moves = []
-
     self.board[pos] = self
 
   end
@@ -35,7 +31,7 @@ class Piece
   end
 
   def king?
-    king
+    self.king
   end
 
   def crown
@@ -44,20 +40,21 @@ class Piece
 
 
   def possible_moves
-    self.moves = normal_moves
+    moves = []
+    moves = normal_moves
     moves.concat(attack_moves)
+    moves
   end
 
   def normal_moves
-    p board
-    p pos
-    self.moves = []
+    moves = []
     move_dirs.each_with_index do |(dx, dy), idx|
       new_space = pos[0] + dx, pos[1] + dy
-      if in_board?(new_space) && board.empty_space?(new_space)
+      if board.in_board?(new_space) && board.empty_space?(new_space)
         moves << new_space
       end
     end
+
     moves
   end
 
@@ -65,36 +62,70 @@ class Piece
     attack_moves = []
     attack_move_dirs.each_with_index do |(dx, dy), idx|
       new_space = pos[0] + dx, pos[1] + dy
+
       taken = move_dirs[idx]
-      if in_board?(new_space) && board.empty_space?(new_space)
-        next if board[taken].nil?
-          moves << new_space
+      if board.in_board?(new_space) && board.empty_space?(new_space)
+        next unless board[taken].nil? || board[taken].color == color
+        attack_moves << new_space
       end
     end
     attack_moves
   end
 
 
-
-
-  def perform_jump
+  def move_to(end_pos)
+    @board[pos] = nil
+    @pos = end_pos
+    @board[end_pos] = self
   end
+
+
+  def perform_slide(end_pos)
+    raise "You can't do that! Invalid move" unless normal_moves.include?(end_pos)
+    self.move_to(end_pos)
+  end
+
+
+  def perform_jump(end_pos)
+    raise "Invalid move" unless attack_moves.include?(end_pos)
+    taken = find_taken_piece(pos, end_pos)
+    raise "CKY, dude!" if board[taken].color == color
+    board[taken] = nil
+    self.move_to(end_pos)
+  end
+
+
+
+  def find_taken_piece(start_pos, end_pos)
+    #average
+    taken = []
+    s_row, s_col = pos
+    e_row, e_col = end_pos
+    taken << (s_row + e_row) / 2
+    taken << (s_col + e_col) / 2
+
+    # taken << s_row + 1 if e_row - s_row > 1
+    # taken << s_row - 1 if e_row - s_row < 1
+    #
+    # taken << s_col + 1 if e_col - s_col > 1
+    # taken << s_col - 1 if e_col - s_col < 1
+    #taken
+  end
+
+
 
 
 
   def move_dirs
     return MOVES[color] unless king?
-    MOVES[king]
+    MOVES[:red] + MOVES[:black]
   end
 
   def attack_move_dirs
     return ATTACK_MOVES[color] unless king?
-    ATTACK_MOVES[king]
+    ATTACK_MOVES[:red] + ATTACK_MOVES[:black]
   end
 
-  def in_board?(pos)
-    pos[0].between?(0,7) && pos[1].between?(0,7)
-  end
 
 
 
