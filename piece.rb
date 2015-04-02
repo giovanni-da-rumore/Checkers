@@ -15,12 +15,17 @@ class Piece
 
   attr_accessor :color, :king, :pos, :board, :moves
 
-  def initialize(pos, color, board)
+  def initialize(pos, color, board, king = nil)
 
     @pos = pos
     @color = color
     @board = board
-    @king = false
+    if king.nil?
+      @king = false
+    else
+      @king = king 
+    end
+
     self.board[pos] = self
 
   end
@@ -96,20 +101,52 @@ class Piece
 
 
 
+  def perform_moves!(end_pos)
+    if end_pose.length < 2
+      begin
+      return perform_slide(end_pos)
+
+      rescue StandardError
+        return perform_jump(end_pos)
+      end
+    end
+
+    end_pos.each do |move|
+      perform_jump(move)
+    end
+  end
+
+
+  def valid_move_seq?(end_pos)
+    dup_board = board.dup
+  end
+
+
+
+  def dup(dup_board)
+    dup_piece = Piece.new(pos, color, dup_board, king)
+    dup_piece
+  end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   def find_taken_piece(start_pos, end_pos)
-    #average
     taken = []
     s_row, s_col = pos
     e_row, e_col = end_pos
     taken << (s_row + e_row) / 2
     taken << (s_col + e_col) / 2
-
-    # taken << s_row + 1 if e_row - s_row > 1
-    # taken << s_row - 1 if e_row - s_row < 1
-    #
-    # taken << s_col + 1 if e_col - s_col > 1
-    # taken << s_col - 1 if e_col - s_col < 1
-    #taken
   end
 
 

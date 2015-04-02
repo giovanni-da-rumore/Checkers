@@ -68,6 +68,20 @@ class Board
   end
 
 
+  def dup
+    dup_board = Board.new
+    p dup_board
+
+    grid.flatten.each_with_index do |piece, idx|
+      dup_board[[(idx / 8), (idx % 8)]] = piece.dup(dup_board) unless piece.nil?
+    end
+    dup_board
+  end
+
+
+
+
+
   def render
     handle = 0
     puts "   #{[1,2,3,4,5,6,7,8].join('  ')}"
@@ -90,6 +104,7 @@ class Board
       puts "#{idx + 1 }: #{display_row.join(' ')}"
     end
   end
+
 end
 
 
@@ -114,7 +129,9 @@ piece4 = Piece.new([2,1], :black, board)
 # p piece2.possible_moves
 
 board.render
-#
+nb = board.dup
+
+nb.render
 piece3.perform_jump([3,6])
 
 piece.perform_slide([3,2])
@@ -122,6 +139,9 @@ piece.perform_slide([3,2])
  puts
 # board.render
 board.render
+puts
+
+nb.render
 
 
 
