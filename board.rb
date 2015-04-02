@@ -10,8 +10,9 @@ class Board
   attr_accessor :grid
 
 
-  def initialize
-    @grid = make_grid
+  def initialize(grid = nil)
+    grid = make_grid if grid.nil?
+    @grid = grid
   end
 
 
@@ -19,28 +20,32 @@ class Board
     Array.new(8) {Array.new(8)}
   end
 
+  def self.set_board
+    board = Board.new
+    board.populate
+    board
+  end
 
-  # def populate
-  #   grid.each_with_index do |row, x|
-  #     row.each_with_index do |el, y|
-  #
-  #             self[[x, y]] = Piece.new([x, y], :black, self)
-  #           end
-  #         end
-  #       end
-  #     end
-  #   end
-  # end
-
-
-
-  def all_spaces
-    #grid.flatten.compact
-    grid.each_with_object([]) do |row, ray|
-      row.each do |col|
-        ray << col
+  def populate
+    self.grid.each_with_index do |row, idx|
+      row.each_with_index do |space, col|
+        if idx % 2 == 0 && col % 2 == 0 && idx < 3
+          Piece.new([idx, col], :black, self)
+        elsif idx % 2 == 1 && col % 2 == 1 && idx < 3
+          Piece.new([idx, col], :black, self)
+        elsif idx % 2 == 1 && col % 2 == 0 && idx > 4
+          Piece.new([idx, col], :red, self)
+        elsif idx % 2 == 0 && col % 2 == 1 && idx > 4
+          Piece.new([idx, col], :red, self)
+        end
       end
     end
+  end
+
+
+
+  def all_pieces
+    grid.flatten.compact
   end
 
   def []=(pos, piece)
@@ -89,10 +94,6 @@ class Board
       puts "#{idx + 1 }: #{row.join(' ')}"
     end
   end
-
-
-
-
 end
 
 
@@ -100,13 +101,13 @@ end
 
 
 
-board = Board.new
-board.populate
+board = Board.set_board
 
 
 
-piece = Piece.new([0,0], :black, board)
-piece2 = Piece.new([4,4], :red, board)
+
+#piece = Piece.new([0,0], :black, board)
+#piece2 = Piece.new([4,4], :red, board)
 
 #puts piece.symbol
 #p piece.possible_moves
@@ -119,10 +120,20 @@ puts
 #p board
 board.render
 
-
-
-
-
-
-
-b = Board.new
+#
+# p String.modes
+#
+# p
+#
+# p String.color_samples
+#
+# count = 0
+#   handle = 2
+# while count < 63
+#   if count % 2 == hanlde
+#
+#   if (count + 1) % 8 = 0
+#     handle = (handle == 2 ? 1 : 2)
+#   end
+#   count += 1
+#
