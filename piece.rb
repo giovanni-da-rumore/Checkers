@@ -23,7 +23,7 @@ class Piece
     if king.nil?
       @king = false
     else
-      @king = king 
+      @king = king
     end
 
     self.board[pos] = self
@@ -55,8 +55,10 @@ class Piece
     moves = []
     move_dirs.each_with_index do |(dx, dy), idx|
       new_space = pos[0] + dx, pos[1] + dy
+      p new_space
       if board.in_board?(new_space) && board.empty_space?(new_space)
         moves << new_space
+        p moves
       end
     end
 
@@ -102,43 +104,50 @@ class Piece
 
 
   def perform_moves!(end_pos)
-    if end_pose.length < 2
+
+    if end_pos.length < 2
       begin
-      return perform_slide(end_pos)
+
+        return perform_slide(end_pos[0])
 
       rescue StandardError
-        return perform_jump(end_pos)
+        return perform_jump(end_pos[0])
       end
     end
-
     end_pos.each do |move|
       perform_jump(move)
+      self.pos = move
     end
   end
 
 
   def valid_move_seq?(end_pos)
     dup_board = board.dup
+    dup_piece = dup_board[pos]
+    puts "duped_piece"
+    p dup_piece
+    puts
+    #p dup_board[end_pos]
+    p end_pos
+    begin
+      dup_piece.perform_moves!(end_pos)
+      true
+    rescue
+      false
+    end
   end
 
+
+  def perform_moves(end_pos)
+    raise InvalidMoveError.new unless valid_move_seq?(end_pos)
+    perform_moves!(end_pos)
+  end
 
 
   def dup(dup_board)
     dup_piece = Piece.new(pos, color, dup_board, king)
     dup_piece
   end
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   def find_taken_piece(start_pos, end_pos)
@@ -148,6 +157,24 @@ class Piece
     taken << (s_row + e_row) / 2
     taken << (s_col + e_col) / 2
   end
+
+
+
+  def tyrannic?
+    if color.red
+      if pos[0] == 0
+        puts "King me!" if king == false
+        crown
+      end
+    else
+      if pos[0] == 7
+        puts 'King me!' if king == false
+        crown
+      end
+    end
+  end
+
+
 
 
 
@@ -162,8 +189,8 @@ class Piece
     return ATTACK_MOVES[color] unless king?
     ATTACK_MOVES[:red] + ATTACK_MOVES[:black]
   end
+end
 
 
-
-
+class InvalidMoveError < StandardError
 end

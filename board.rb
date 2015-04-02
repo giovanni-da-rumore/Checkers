@@ -111,54 +111,37 @@ end
 
 
 
-
-board = Board.set_board
-
-
+#
+# board = Board.set_board
+# board.render
 
 #
-piece = Piece.new([2,1], :black, board)
-piece2 = Piece.new([4,5], :black, board)
-piece3 = Piece.new([5,4], :red, board)
-piece4 = Piece.new([2,1], :black, board)
-
 #
-# p piece4.possible_moves
 #
+# #
+# piece = Piece.new([2,1], :black, board)
+# piece2 = Piece.new([4,5], :black, board)
+# piece3 = Piece.new([5,4], :red, board)
+# piece4 = Piece.new([2,1], :black, board)
+#
+# #
+# # p piece4.possible_moves
+# #
 #
 # p piece2.possible_moves
-
-board.render
-nb = board.dup
-
-nb.render
-piece3.perform_jump([3,6])
-
-piece.perform_slide([3,2])
 #
- puts
 # board.render
-board.render
-puts
-
-nb.render
-
-
-
+# nb = board.dup
 #
-# p String.modes
+# nb.render
+# piece3.perform_jump([3,6])
 #
-# p
+# piece.perform_slide([3,2])
+# #
+#  puts
+# # board.render
+# board.render
+# puts
 #
-#p String.color_samples
-#
-# count = 0
-#   handle = 2
-# while count < 63
-#   if count % 2 == hanlde
-#
-#   if (count + 1) % 8 = 0
-#     handle = (handle == 2 ? 1 : 2)
-#   end
-#   count += 1
+# nb.render
 #
